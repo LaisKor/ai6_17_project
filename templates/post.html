@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자유여행 게시판</title>
+    
+    <!-- 부트스트랩 CDN 추가 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 네비게이션 바 스타일링 */
+        .navbar-custom {
+            background-color: #007bff; /* Bootstrap primary color */
+            border-bottom: 3px solid #0056b3; /* Slightly darker blue border */
+        }
+        .navbar-custom .navbar-brand, .navbar-custom .nav-link {
+            color: #ffffff; /* White text */
+        }
+        .navbar-custom .nav-link:hover, .navbar-custom .navbar-brand:hover {
+            color: #ffff80; /* Light yellow on hover */
+        }
+
+        /* 컨테이너 및 기타 스타일링 */
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .list-group-item {
+            border: none; /* Removes border */
+            margin-bottom: 10px; /* Adds spacing between posts */
+            border-radius: 10px; /* Rounds corners */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Adds subtle shadow */
+        }
+        .list-group-item:hover {
+            transform: scale(1.02); /* Slightly scale up on hover */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Enhances shadow on hover */
+        }
+        .list-group-item img {
+            margin-top: 15px;
+            max-height: 300px; /* Limits image height */
+            object-fit: cover; /* Ensures cover fit */
+            border-radius: 5px; /* Rounds image corners */
+        }
+
+        /* 댓글 창 스타일링 */
+        .comment-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+        .comment-box textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical; /* Allow vertical resizing */
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .comment-box input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .comment-box input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 바, 클래스 변경: navbar-custom -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <a class="navbar-brand" href="/">자유여행 게시판</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/write">여행 기록 작성</a>
+                </li>
+                {% if 'username' in session %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">로그아웃</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">로그인</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="container">
+        <h1>여행 기록</h1>
+        <hr>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.content }}</p>
+                <!-- 작성자 표시 -->
+                <p><strong>작성자:</strong> {{ post.user.username }}</p>
+                <!-- 이미지 표시 -->
+                {% if post.image %}
+                <img src="{{ url_for('static', filename='uploads/' + post.image) }}" class="img-fluid" alt="Post Image">
+                {% endif %}
+                <!-- 게시물 추천, 비추천, 삭제 버튼 -->
+                <form style="display: inline;" action="/post/{{ post.id }}/upvote" method="post">
+                    <button type="submit" class="btn btn-primary">추천 {{ post.upvotes }}</button>
+                </form>
+                <form style="display: inline;" action="/post/{{ post.id }}/downvote" method="post">
+                    <button type="submit" class="btn btn-danger">비추천 {{ post.downvotes }}</button>
+                </form>
+                {% if 'username' in session and (post.user.username == session['username'] or session['username'] == 'admin') %}
+                <form style="display: inline;" action="/post/{{ post.id }}/delete" method="post">
+                    <button type="submit" class="btn btn-danger">게시물 삭제</button>
+                </form>
+                {% endif %}
+            </li>
+        </ul>
+<!-- 댓글 창 -->
+<div class="comment-box">
+    <form action="/post/{{ post.id }}" method="post">
+        <textarea name="comment" placeholder="댓글을 입력하세요"></textarea><br>
+        <input type="submit" value="댓글 작성">
+    </form>
+</div>
+
+        <!-- 댓글 표시 -->
+        <ul class="list-group">
+            {% for comment in post.comments %}
+            <li class="list-group-item">
+                <p>{{ comment.text }}</p>
+                <!-- 작성자 표시 -->
+                <p><strong>작성자:</strong> {{ comment.user.username }}</p>
+                <!-- 댓글 추천, 비추천 버튼 -->
+                <form style="display: inline;" action="/comment/{{ comment.id }}/upvote" method="post">
+                    <button type="submit" class="btn btn-primary">추천 {{ comment.upvotes }}</button>
+                </form>
+                <form style="display: inline;" action="/comment/{{ comment.id }}/downvote" method="post">
+                    <button type="submit" class="btn btn-danger">비추천 {{ comment.downvotes }}</button>
+                </form>
+                <!-- 댓글 삭제 버튼 -->
+                {% if 'username' in session and (comment.user.username == session['username'] or session['username'] == 'admin') %}
+                <form style="display: inline;" action="/comment/{{ comment.id }}/delete" method="post">
+                    <button type="submit" class="btn btn-danger">댓글 삭제</button>
+                </form>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- 부트스트랩 및 jQuery CDN 추가 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

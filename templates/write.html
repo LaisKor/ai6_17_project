@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 기록 작성</title>
+    <!-- 부트스트랩 CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 네비게이션 바 스타일링 */
+        .navbar-custom {
+            background-color: #007bff; /* Bootstrap primary color */
+            border-bottom: 3px solid #0056b3; /* Slightly darker blue border */
+        }
+        .navbar-custom .navbar-brand, .navbar-custom .nav-link {
+            color: #ffffff; /* White text */
+        }
+        .navbar-custom .nav-link:hover, .navbar-custom .navbar-brand:hover {
+            color: #ffff80; /* Light yellow on hover */
+        }
+
+        /* 폼 요소 스타일링 */
+        .form-control:focus {
+            border-color: #0056b3; /* Dark blue border on focus */
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.25); /* Light blue glow */
+        }
+        .btn-custom {
+            background-color: #0056b3; /* Dark blue background */
+            color: #ffffff; /* White text */
+        }
+        .btn-custom:hover {
+            background-color: #004080; /* Slightly darker blue on hover */
+        }
+
+        /* 컨테이너 및 기타 스타일링 */
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 네비게이션 바, 클래스 변경: navbar-custom -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <a class="navbar-brand" href="/">자유여행 게시판</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">홈</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/write">여행 기록 작성</a>
+                </li>
+                <!-- 세션 확인 및 조건부 렌더링 -->
+                {% if 'username' in session %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/mypage">마이페이지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">로그아웃</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">로그인</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-center mb-5">여행 기록 작성</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">제목:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+                <small class="form-text text-muted">여행 기록의 제목을 입력하세요.</small>
+            </div>
+            <div class="form-group">
+                <label for="content">내용:</label>
+                <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                <small class="form-text text-muted">여행 기록의 내용을 입력하세요.</small>
+            </div>
+            <div class="form-group">
+                <label for="image">이미지:</label>
+                <input type="file" class="form-control-file" id="image" name="image">
+                <small class="form-text text-muted">여행 기록과 관련된 이미지를 업로드하세요.</small>
+            </div>
+            <button type="submit" class="btn btn-primary btn-custom">제출</button>
+            <small class="form-text text-muted">여행 기록을 저장하려면 제출 버튼을 클릭하세요.</small>
+        </form>
+    </div>
+    <!-- 부트스트랩 및 jQuery CDN 추가 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
