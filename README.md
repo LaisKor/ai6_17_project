@@ -14,3 +14,11 @@
   -로그인,로그아웃,회원가입 기능
 
 원래 기획했던 기능들은 능력부족으로 인해 구현 실패
+
+사용한 기술
+-python
+-flask
+-html
+-sqlite
+-bootstrap
+-css
