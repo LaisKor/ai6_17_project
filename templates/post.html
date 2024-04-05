@@ -120,7 +120,7 @@
                 {% if post.image %}
                 <img src="{{ url_for('static', filename='uploads/' + post.image) }}" class="img-fluid" alt="Post Image">
                 {% endif %}
-                <!-- 게시물 추천, 비추천, 삭제 버튼 -->
+                <!-- 게시물 추천, 비추천, 삭제, 수정 버튼 -->
                 <form style="display: inline;" action="/post/{{ post.id }}/upvote" method="post">
                     <button type="submit" class="btn btn-primary">추천 {{ post.upvotes }}</button>
                 </form>
@@ -131,6 +131,7 @@
                 <form style="display: inline;" action="/post/{{ post.id }}/delete" method="post">
                     <button type="submit" class="btn btn-danger">게시물 삭제</button>
                 </form>
+                <a href="/post/{{ post.id }}/edit" class="btn btn-info">게시물 수정</a>
                 {% endif %}
             </li>
         </ul>
