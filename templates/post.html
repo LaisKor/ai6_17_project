@@ -1,3 +1,4 @@
+<!-- post.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -133,13 +134,13 @@
                 {% endif %}
             </li>
         </ul>
-<!-- 댓글 창 -->
-<div class="comment-box">
-    <form action="/post/{{ post.id }}" method="post">
-        <textarea name="comment" placeholder="댓글을 입력하세요"></textarea><br>
-        <input type="submit" value="댓글 작성">
-    </form>
-</div>
+        <!-- 댓글 창 -->
+        <div class="comment-box">
+            <form action="/post/{{ post.id }}" method="post">
+                <textarea name="comment" placeholder="댓글을 입력하세요"></textarea><br>
+                <input type="submit" value="댓글 작성">
+            </form>
+        </div>
 
         <!-- 댓글 표시 -->
         <ul class="list-group">
@@ -164,6 +165,17 @@
             </li>
             {% endfor %}
         </ul>
+
+        <!-- 플래시 메시지 표시 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
     <!-- 부트스트랩 및 jQuery CDN 추가 -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
